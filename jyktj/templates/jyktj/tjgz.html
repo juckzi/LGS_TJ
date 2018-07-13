@@ -1,0 +1,186 @@
+﻿{% extends './base.html' %}
+{% block pagedescription %}
+<meta name="description" content="老干所检验科统计工作量报表">
+<meta name="author" content="王轩">
+<link rel="icon" href="/static/image/favicon.ico" />
+<link rel="icon" href="/static/img/hmbb.jpg" />
+<title>老干所检验科统计工作量报表</title>
+{% endblock %}
+{% load static %}
+{% block css %}
+{{ block.super }}
+<link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen" />
+<style type="text/css">
+    .customcontainer {
+        margin-bottom: 90px
+    }
+    </style>
+{% endblock %}
+{% block script %}
+{{ block.super }}
+<script type="text/javascript" src="/static/js/bootstrap-datetimepicker.min.js" charset="UTF-8"></script>
+<script type="text/javascript" src="/static/js/bootstrap-datetimepicker.zh-CN.js" charset="UTF-8"></script>
+<script type="text/javascript" src="/static/js/jquery-ajax-native.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        var mydate = new Date();
+        var loading = $('#fountainTextG');
+        loading.hide();
+        var thisyear = mydate.getFullYear();
+        var thismonth = mydate.getMonth() + 1;
+        var thisday = mydate.getDate();
+        $('.form_date').datetimepicker({
+            language: 'zh-CN',
+            weekStart: 1,
+            todayBtn: 1,
+            autoclose: 1,
+            todayHighlight: 1,
+            startView: 3,
+            minView: 2,
+            forceParse: 0,
+            endDate: thisyear + '-' + thismonth + '-' + thisday
+        });
+        $('#searchbtn').click(function () {
+            var startdate = $('#startdate').data('datetimepicker').getDate();
+            var startyear = startdate.getFullYear();
+            var startmonth = startdate.getMonth() + 1;
+            var startday = startdate.getDate();
+            var enddate = $('#enddate').data('datetimepicker').getDate();
+            var endyear = enddate.getFullYear();
+            var endmonth = enddate.getMonth() + 1;
+            var endday = enddate.getDate();
+            var dept = $('#dept').val();
+            var checked = $('input:radio:checked').val();
+            if (startdate > enddate) { alert('错误！请正确输入日期！'); }
+            else {
+                $.get('/jyktj/ajax/test/', {
+                    'startyear': startyear, 'startmonth': startmonth, 'startday': startday, 'endyear': endyear,
+                    'endmonth': endmonth, 'endday': endday, 'dept': dept, 'checked': checked
+                }, function (data) {
+                    $('#LGSTJGZ').html(data);
+                    $('#exportbtn').removeAttr('disabled');
+                });
+            }
+        });
+        $('#exportbtn').click(function () {
+            var startdate = $('#startdate').data('datetimepicker').getDate();
+            var startyear = startdate.getFullYear();
+            var startmonth = startdate.getMonth() + 1;
+            var startday = startdate.getDate();
+            var enddate = $('#enddate').data('datetimepicker').getDate();
+            var endyear = enddate.getFullYear();
+            var endmonth = enddate.getMonth() + 1;
+            var endday = enddate.getDate();
+            var checked = $('input:radio:checked').val();
+            var dept = $('#dept').val();
+            console.log(checked);
+            if (startdate > enddate) { alert('错误！请正确输入日期！'); }
+            else {
+                $.ajax({
+                    dataType: 'native',
+                    url: '/jyktj/csvgen/',
+                    data: {
+                        'startyear': startyear, 'startmonth': startmonth, 'startday': startday, 'endyear': endyear,
+                        'endmonth': endmonth, 'endday': endday, 'dept': dept,'checked': checked
+                    },
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    success: function (blob) {
+                        console.log(blob.size);
+                        var link = document.createElement('a');
+                        link.href = window.URL.createObjectURL(blob);
+                        link.download = "老干所检验科统计工作量报表.csv";
+                        link.click();
+                    }
+                });
+            }
+        }
+        )
+        $(document).ajaxStart(function () {
+            loading.show();
+        }).ajaxStop(function () {
+            loading.hide();
+        });
+    });
+</script>
+{% endblock %}
+{% block body %}
+<header class="navbar navbar-static-top bs-docs-nav" id="top">
+    <div class="container"> 
+        <div class="navbar-header">
+            <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#bs-navbar" aria-controls="bs-navbar" aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="../" class="navbar-brand">首页</a>
+        </div>
+        <nav id="bs-navbar" class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="../zytj/" )">老干所统计科</a>
+                </li>
+            </ul>   
+        </nav>
+    </div>
+</header>
+    <div class="container customcontainer">
+        <h1 align="center"><b><font size='30'>检验科统计工作量报表</font></b></h1>
+        <form action="" class="form-horizontal" role="form">
+            <fieldset>
+                <div class="form-group">
+                    <label for="dtp_input2" class="col-md-offset-2 col-md-2 control-label">请选择开始日期</label>
+                    <div id='startdate' class="input-group date form_date col-md-3" data-date="" data-date-format="yyyy年 MM dd日" data-link-field="dtp_input1" data-link-format="yyyy-mm-dd">
+                        <input class="form-control" size="16" type="text" value="" readonly>
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                    </div>
+                    <input type="hidden" id="dtp_input2" value="" /><br />
+                </div>
+                <div class="form-group">
+                    <label for="dtp_input2" class="col-md-offset-6 col-md-2 control-label">请选择结束日期</label>
+                    <div id='enddate' class="input-group date form_date col-md-3" data-date="" data-date-format="yyyy年 MM dd日" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                        <input class="form-control" size="16" type="text" value="" readonly>
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+                        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                    </div>
+                    <input type="hidden" id="dtp_input2" value="" /><br />
+                </div>
+                <div class="form-group">
+                    <label for="dtp_input3" class="col-md-offset-6 col-md-2 control-label">请选择类型</label>
+                    <div class="input-group col-md-3">
+                        <select id='dept' class='form-control'>
+                            <option>门诊和住院</option>
+                            <option>门诊</option>
+                            <option>住院</option>                   
+                        </select>
+                        <span class="input-group-btn">
+                            <button id="searchbtn" class="btn btn-danger" type="button">查询</button>
+                            <button id="exportbtn" class="btn btn-danger" type="button" disabled="disabled">导出</button>
+                        </span>
+                    </div>
+                    <input type="hidden" id="dtp_input2" value="" /><br />
+                </div>
+            </fieldset>
+        </form>
+        <div id="fountainTextG">
+            <div id="fountainTextG_1" class="fountainTextG">L</div>
+            <div id="fountainTextG_2" class="fountainTextG">o</div>
+            <div id="fountainTextG_3" class="fountainTextG">a</div>
+            <div id="fountainTextG_4" class="fountainTextG">d</div>
+            <div id="fountainTextG_5" class="fountainTextG">i</div>
+            <div id="fountainTextG_6" class="fountainTextG">n</div>
+            <div id="fountainTextG_7" class="fountainTextG">g</div>
+
+        </div>
+        <div id="LGSTJGZ">
+        </div>
+        <footer class="footer navbar-fixed-bottom bs-docs-footer">
+            <div class="container">
+                <p class='col-md-offset-4 col-md-4'><b><font size='4'>内蒙古巴彦淖尔市医院信息工程科</font> </b></p>
+                <p class='col-md-offset-4 col-md-4'><b><font size='3'>督导员：段旭.制作员：王轩.</font> </b></p>
+            </div>
+        </footer>
+{% endblock %}

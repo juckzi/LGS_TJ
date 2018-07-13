@@ -1,0 +1,19 @@
+﻿<div id="LGSZYSF">
+    {% if zytj %}
+    <p>
+        老干所住院统计{{ startyear }}年{{ startmonth }}月{{ startmonth }}日至
+        {{ endyear }}年{{ endmonth }}月{{ endday }}日
+        {{ dept }}住院收费报表
+    </p>
+    <table class='table-hover table table-bordered table-striped'>
+        <tr class='warning'><td>开单科室</td><td>执行科室</td><td>费用类别</td><td>收入</td></tr>
+        {% for zytjxz in zytj %}
+        <tr><td>{{zytjxz.0}}</td><td>{{zytjxz.1}}</td><td>{{zytjxz.2}}</td><td>{{zytjxz.3}}</td></tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <div class="alert alert-white" role="alert" class="jumbotron" class="alert alert-white alert-dismissible" role="alert">
+        <p class='col-md-offset-1 col-md-10'><b><font size='20' color='red'><a href="http://10.25.22.22/zytj/"><strong>温馨提示：请正确输入日期！</strong></a></p>
+    </div>
+    {% endif %}
+</div>

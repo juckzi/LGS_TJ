@@ -1,0 +1,18 @@
+<div id="LGSMZSF">
+    {% if mztj %}
+    <p>
+        老干所门诊{{ startyear }}年{{ startmonth }}月{{ startmonth }}日至
+        {{ endyear }}年{{ endmonth }}月{{ endday }}日
+        {{ dept }}门诊收费报表
+    </p>
+    <table class='table-hover table table-bordered table-striped'>
+        <tr class='warning'><td>科室名称</td><td>费用类别</td><td>收入</td></tr>
+        {% for mztjxz in mztj %}
+        <tr><td>{{mztjxz.1}}</td><td>{{mztjxz.3}}</td><td>{{mztjxz.4}}</td></tr>
+        {% endfor %}
+    </table>
+    {% else %}
+    <div class="alert alert-white" role="alert" class="jumbotron" class="alert alert-white alert-dismissible" role="alert">
+        <p class='col-md-offset-1 col-md-10'><b><font size='20' color='red'><a href="http://10.25.22.22/mztj/"><strong>温馨提示：请正确输入日期！</strong></a></p>
+    </div>
+    {% endif %}
